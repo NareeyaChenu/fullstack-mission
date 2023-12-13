@@ -51,7 +51,7 @@ const Chat = () => {
         {selectedUser && <div style={{ marginBottom: '10px' }}>Selected User: {selectedUser}</div>}
 
         <div style={{ height: '400px', overflowY: 'scroll', border: '1px solid #ccc', padding: '10px' }}>
-          {messages.map((message, index) => (
+          {messages.map((message : any, index : any) => (
             <div key={index} style={{ marginBottom: '10px', textAlign: message.sender === 'user' ? 'left' : 'right' }}>
               {message.sender === 'user' ? 'You: ' : 'Bot: '}
               {message.text}
