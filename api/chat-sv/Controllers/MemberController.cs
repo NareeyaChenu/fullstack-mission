@@ -1,4 +1,5 @@
 using chat_sv.Interfaces;
+using chat_sv.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace chat_sv.Controllers
@@ -20,7 +21,7 @@ namespace chat_sv.Controllers
         }
         [HttpGet]
         [Route("{id}")]
-        public ActionResult QueryMember ([FromRoute] string id)
+        public ActionResult GetMember ([FromRoute] string id)
         {
             return _memberService.GetMemberbyId(id);
         }

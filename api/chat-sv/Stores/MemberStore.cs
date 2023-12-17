@@ -9,7 +9,7 @@ namespace chat_sv.Stores
             new MemberModel {MemberName = "Lisa"},
             new MemberModel {MemberName = "Jisoo"},
             new MemberModel {MemberName = "Jennie"},
-            new MemberModel {MemberName = "Rose"},
+            new MemberModel {MemberName = "Rose`"},
         };
     }
 }
