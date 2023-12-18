@@ -6,13 +6,17 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import PersonIcon from '@mui/icons-material/Person';
 import Image from 'next/image';
+import axios from 'axios';
+
 
 // Assuming you have a list of users
 const userList = ["User1", "User2", "User3"];
 
 type UserType = {
-  name?: string;
-  image?: string
+  member_name?: string;
+  image_url?: string;
+  member_id? : string;
+
 };
 
 type MessageType = {
@@ -76,11 +80,32 @@ const Chat = () => {
   const [allmessages, setAllMessages] = useState<{ message: MessageType }[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [allUsers , setAllUsers] = useState<UserType[] | any>([]);
+  const [filteredUsers, setFilteredUsers] = useState<UserType[]>([]);
 
   // Save data to localStorage whenever allmessages changes
   useEffect(() => {
     setAllMessages(allmsg);
   }, [allmsg]);
+
+  useEffect(() => {
+    // Replace this URL with the actual API endpoint
+    const apiUrl = 'http://localhost:5177/api/v1/member';
+
+    // Fetch data from the API using Axios
+    axios.get(apiUrl)
+    .then(response => setAllUsers(response.data))
+    .catch(error => console.error('Error fetching data:', error));
+  }, []);
+
+  useEffect(() => {
+    // Filter users when searchTerm changes
+    const filtered = allUsers.filter((user : UserType) =>
+      user.member_name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  }, [searchTerm, allUsers]); // Update the filteredUsers when searchTerm or allUsers changes
+
 
   const handleSendMessage = () => {
     if (newMessage.trim() === '') {
@@ -129,9 +154,6 @@ const Chat = () => {
     setSnackbarOpen(false);
   };
 
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -157,7 +179,7 @@ const Chat = () => {
         <ul>
           {filteredUsers.map((user, index) => (
             <li key={index} onClick={() => handleUserClick(user)} style={{ cursor: 'pointer' }}>
-              {user.name}
+              {user.member_name}
             </li>
           ))}
         </ul>
@@ -168,21 +190,21 @@ const Chat = () => {
         {/* Display the selected user's name */}
         {selectedUser && (
           <div style={{ display: 'flex', alignItems: 'center', padding: '10px' }}>
-            {selectedUser.image && (
+            {selectedUser.image_url && (
               <Avatar
-                alt={selectedUser.name}
-                src={selectedUser.image}
+                alt={selectedUser.member_name}
+                src={selectedUser.image_url}
                 style={{
                   width: '80px', // Adjust the width to make the Avatar larger
                   height: '80px', // Adjust the height accordingly
                   marginRight: '20px',
-                  border: '2px solid #007bff', // Add a border for a stylish look
+                  border: '2px solid #b1b7bd', // Add a border for a stylish look
                 }}
               />
             )}
             <div>
               <div style={{ marginBottom: '10px', fontSize: '18px', fontWeight: 'bold' }}>
-                Selected User: {selectedUser.name}
+                Selected User: {selectedUser.member_name}
               </div>
               <div style={{ marginBottom: '10px', fontSize: '16px', color: '#555' }}>Channel: {selectedUser.channel}</div>
             </div>

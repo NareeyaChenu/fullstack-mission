@@ -12,5 +12,7 @@ namespace chat_sv.DTOs.member
         public string? MemberId {get; set;}
         [JsonProperty ("member_name")]
         public string? MemberName {get; set;}
+        [JsonProperty ("image_url")]
+        public string? ImageUrl {get; set;}
     }
 }

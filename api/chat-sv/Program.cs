@@ -13,6 +13,16 @@ builder.Services.AddControllers()
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
         options.SerializerSettings.ContractResolver = new DefaultContractResolver();
     });
+builder.Services.AddOptions();
+builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("chat-sv-core"!, build =>
+            {
+                build.WithOrigins("*")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+            });
+        });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -31,7 +41,9 @@ if (app.Environment.IsDevelopment())
 
 // app.UseHttpsRedirection();
 
-app.UseAuthorization();
+// app.UseAuthorization();
+
+app.UseCors("chat-sv-core");
 
 app.MapControllers();
 
