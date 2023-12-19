@@ -55,22 +55,6 @@ var users = [
 ];
 
 const allmsg: { message: MessageType }[] = [
-  {
-    message: {
-      message_id: "1",
-      event: {
-        type: "receive",
-        from: "me",
-      },
-      message_object: [
-        {
-          type: "text",
-          text: "Hii",
-          image: null,
-        },
-      ],
-    },
-  },
 ];
 
 const Chat = () => {

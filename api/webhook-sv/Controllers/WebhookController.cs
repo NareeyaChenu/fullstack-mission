@@ -1,4 +1,7 @@
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 
 namespace webhook_sv.Controllers
 {
@@ -14,11 +17,9 @@ namespace webhook_sv.Controllers
 
         [HttpPost]
         [Route("line/{clientId}")]
-        public ActionResult Post ([FromRoute]string clientId , [FromBody] object content)
+        public ActionResult Post([FromRoute] string clientId, [FromBody] object content)
         {
-            _logger.LogInformation($"client is is {clientId}");
-            _logger.LogInformation($"content : {content}");
-
+        
             return Ok();
         }
     }
