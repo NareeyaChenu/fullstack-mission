@@ -5,9 +5,9 @@ import Avatar from '@mui/material/Avatar';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import PersonIcon from '@mui/icons-material/Person';
-import Image from 'next/image';
 import axios from 'axios';
-
+import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
+import SendIcon from '@mui/icons-material/Send';
 
 // Assuming you have a list of users
 const userList = ["User1", "User2", "User3"];
@@ -15,7 +15,7 @@ const userList = ["User1", "User2", "User3"];
 type UserType = {
   member_name?: string;
   image_url?: string;
-  member_id? : string;
+  member_id?: string;
 
 };
 
@@ -36,23 +36,6 @@ type MessageObjectType = {
   image?: string | null
 };
 
-var users = [
-  {
-    name: "User1",
-    image: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    channel: "channel1"
-  },
-  {
-    name: "User2",
-    image:  "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    channel: "channel1"
-  },
-  {
-    name: "User3",
-    image:  "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    channel: "channel1"
-  },
-];
 
 const allmsg: { message: MessageType }[] = [
 ];
@@ -64,13 +47,9 @@ const Chat = () => {
   const [allmessages, setAllMessages] = useState<{ message: MessageType }[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [allUsers , setAllUsers] = useState<UserType[] | any>([]);
+  const [allUsers, setAllUsers] = useState<UserType[] | any>([]);
   const [filteredUsers, setFilteredUsers] = useState<UserType[]>([]);
-
-  // Save data to localStorage whenever allmessages changes
-  useEffect(() => {
-    setAllMessages(allmsg);
-  }, [allmsg]);
+  const [userId, setUserId] = useState<string>('');
 
   useEffect(() => {
     // Replace this URL with the actual API endpoint
@@ -78,13 +57,24 @@ const Chat = () => {
 
     // Fetch data from the API using Axios
     axios.get(apiUrl)
-    .then(response => setAllUsers(response.data))
-    .catch(error => console.error('Error fetching data:', error));
+      .then(response => setAllUsers(response.data))
+      .catch(error => console.error('Error fetching data:', error));
   }, []);
+  useEffect(() => {
+    console.log(userId)
+    // Replace this URL with the actual API endpoint
+    const apiUrl = `http://localhost:5177/api/v1/message?member_id=${userId}`;
+
+    // Fetch data from the API using Axios
+    axios.get(apiUrl)
+      .then(response => setAllMessages(response.data.reverse()))
+      // .then(response => console.log(response.data))
+      .catch(error => console.error('Error fetching data:', error));
+  }, [userId]);
 
   useEffect(() => {
     // Filter users when searchTerm changes
-    const filtered = allUsers.filter((user : UserType) =>
+    const filtered = allUsers.filter((user: UserType) =>
       user.member_name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredUsers(filtered);
@@ -126,9 +116,9 @@ const Chat = () => {
   };
 
   const handleUserClick = (user: UserType) => {
-    setSelectedUser(user);
     setMessages([]);
-    setAllMessages([]);
+    setSelectedUser(user);
+    setUserId([user.member_id]);
   };
 
   const handleSnackbarClose = (event: React.SyntheticEvent, reason?: string) => {
@@ -158,12 +148,36 @@ const Chat = () => {
           placeholder="Search users..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ marginBottom: '10px', width: '100%' }}
+          style={{
+            padding: '12px',
+            borderRadius: '5px',
+            border: '1px solid #ddd',
+            width: '100%',
+            boxSizing: 'border-box',
+            fontSize: '16px',
+            outline: 'none',
+          }}
         />
-        <ul>
+        <ul style={{ listStyle: 'none', padding: 0 }}>
           {filteredUsers.map((user, index) => (
-            <li key={index} onClick={() => handleUserClick(user)} style={{ cursor: 'pointer' }}>
-              {user.member_name}
+            <li
+              key={index}
+              onClick={() => handleUserClick(user)}
+              style={{
+                cursor: 'pointer',
+                padding: '15px',
+                borderBottom: '1px solid #e0e0e0',
+                transition: 'background-color 0.3s',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                fontFamily: 'Arial, sans-serif',
+                fontSize: '16px',
+                color: '#333',
+              }}
+            >
+              <span>{user.member_name}</span>
+              {/* Add any additional elements or icons here if needed */}
             </li>
           ))}
         </ul>
@@ -179,10 +193,10 @@ const Chat = () => {
                 alt={selectedUser.member_name}
                 src={selectedUser.image_url}
                 style={{
-                  width: '80px', // Adjust the width to make the Avatar larger
-                  height: '80px', // Adjust the height accordingly
+                  width: '80px',
+                  height: '80px',
                   marginRight: '20px',
-                  border: '2px solid #b1b7bd', // Add a border for a stylish look
+                  border: '2px solid #b1b7bd',
                 }}
               />
             )}
@@ -190,7 +204,7 @@ const Chat = () => {
               <div style={{ marginBottom: '10px', fontSize: '18px', fontWeight: 'bold' }}>
                 Selected User: {selectedUser.member_name}
               </div>
-              <div style={{ marginBottom: '10px', fontSize: '16px', color: '#555' }}>Channel: {selectedUser.channel}</div>
+              <div style={{ fontSize: '16px', color: '#555' }}>Channel: {selectedUser.channel}</div>
             </div>
           </div>
         )}
@@ -200,12 +214,18 @@ const Chat = () => {
           {/* ... (your existing code) */}
           <div
             ref={chatContainerRef}
-            style={{ flex: '1', display: 'flex', flexDirection: 'column', marginLeft: '20px', overflowY: 'scroll', border: '1px solid #ccc', padding: '10px', height: '400px' }}
+            style={{ flex: '1', display: 'flex', flexDirection: 'column', marginLeft: '20px', overflowY: 'scroll', border: '1px solid #ccc', padding: '10px', height: '500px' }}
           >
             {/* Display messages */}
+            {/* Display messages */}
             {allmessages.map((message: any, index: any) => (
-              <div key={index} style={{ marginBottom: '10px', display: 'flex', justifyContent: message.message.event.type === "push" ? 'right' : 'left' }}>
-                {message.message.message_object[0].text}
+              <div key={index} style={{ marginBottom: '10px', display: 'flex', justifyContent: message.event.type === "push" ? 'right' : 'left' }}>
+                {message.message_objects.map((obj: any, objIndex: any) => (
+                  <div key={objIndex} style={{ maxWidth: '70%', wordBreak: 'break-word', borderRadius: '8px', backgroundColor: message.event.type === 'push' ? '#007bff' : '#f0f0f0', color: message.event.type === 'push' ? '#fff' : '#333', padding: '10px', marginLeft: message.event.type === 'push' ? '0' : '10px', marginRight: message.event.type === 'push' ? '10px' : '0' }}>
+                    {obj.type === 'text' && <span>{obj.text}</span>}
+                    {obj.type === 'image' && <img src={obj.image} alt="Image" style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '5px' }} />}
+                  </div>
+                ))}
               </div>
             ))}
           </div>
@@ -215,17 +235,20 @@ const Chat = () => {
 
         {/* Message input and send button */}
         <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}>
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={handleEnterPress} // Handle "Enter" key press
-            placeholder="Type your message..."
-            style={{ marginBottom: '10px', padding: '10px', flexGrow: 1 }}
-          />
-          <button onClick={handleSendMessage} style={{ padding: '10px', background: '#007bff', color: '#fff', border: 'none' }}>
-            Send
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyPress={handleEnterPress} // Handle "Enter" key press
+              placeholder="Type your message..."
+              style={{ padding: '10px', flexGrow: 1, border: '1px solid #ccc', borderRadius: '5px', marginRight: '5px' }}
+            />
+            <AddAPhotoIcon style={{ cursor: 'pointer', marginRight: '5px', color: '#2196F3' }} />
+            <button onClick={handleSendMessage} style={{ cursor: 'pointer', border: '1px', padding: '10px', borderRadius: '5px', color: '#2196F3' }}>
+              <SendIcon />
+            </button>
+          </div>
         </div>
       </div>
       <div>

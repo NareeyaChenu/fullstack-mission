@@ -228,7 +228,7 @@ namespace chat_sv.Stores
                     {
                         Type = "image",
                         Image = "https://f.ptcdn.info/954/081/000/s2c32h11gb0QkX018xNGO-o.jpg"
-                    }
+                    } 
                 }
             },
             new MessageModel

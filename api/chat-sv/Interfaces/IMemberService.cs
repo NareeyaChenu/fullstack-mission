@@ -7,5 +7,7 @@ namespace chat_sv.Interfaces
         public ActionResult QueryMembers ();
 
         public ActionResult GetMemberbyId (string id);
+
+        public ActionResult Create (string name);
     }
 }

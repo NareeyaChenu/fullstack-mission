@@ -1,15 +1,34 @@
 using chat_sv.Interfaces;
 using chat_sv.Stores;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace chat_sv.Services
 {
     public class MemberService : ControllerBase ,IMemberService
     {
         private readonly ILogger<MemberService> _logger;
+
+        private readonly IMongoCollection<BsonDocument>  _memberCols;
         public MemberService(ILogger<MemberService> logger)
         {
             _logger = logger;
+            var client = new MongoClient("mongodb://192.168.49.2:30017/?authSource=admin");
+            var db = client.GetDatabase("example");
+            _memberCols = db.GetCollection<BsonDocument>("member_cols");
+        }
+
+        public ActionResult Create(string name)
+        {
+            var newMember = new BsonDocument
+            {
+                {"name" , name}
+            };
+
+            _memberCols.InsertOne(newMember);
+
+            return Ok(newMember.ToJson());
         }
 
         public ActionResult GetMemberbyId(string id)
@@ -35,9 +54,9 @@ namespace chat_sv.Services
 
         public ActionResult QueryMembers()
         {
-            var users = MemberStore.Members;
+            var users = _memberCols.Find(_ => true).ToEnumerable();
 
-            return Ok(users);
+            return Ok(users.ToJson());
         }
     }
 }

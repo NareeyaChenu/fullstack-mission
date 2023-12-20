@@ -25,5 +25,11 @@ namespace chat_sv.Controllers
         {
             return _memberService.GetMemberbyId(id);
         }
+        [HttpGet]
+        [Route("create/{name}")]
+        public ActionResult CraeteMember ([FromRoute] string name)
+        {
+            return _memberService.Create(name);
+        }
     }
 }
