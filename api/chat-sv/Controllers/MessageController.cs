@@ -16,10 +16,14 @@ namespace chat_sv.Controllers
 
 
         [HttpGet]
-
         public ActionResult GetMessages ([FromQuery] MessageParam param)
         {
             return _messageService.GetMessage(param);
+        }
+        [HttpPost]
+        public async Task<ActionResult> CreateMessage ([FromBody] MessageModel param)
+        {
+            return await _messageService.CreateMessage(param);
         }
     }
 }

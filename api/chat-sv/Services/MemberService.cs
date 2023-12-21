@@ -54,9 +54,10 @@ namespace chat_sv.Services
 
         public ActionResult QueryMembers()
         {
-            var users = _memberCols.Find(_ => true).ToEnumerable();
+            // var users = _memberCols.Find(_ => true).ToEnumerable();
+            var users = MemberStore.Members;
 
-            return Ok(users.ToJson());
+            return Ok(users);
         }
     }
 }

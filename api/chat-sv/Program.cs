@@ -1,8 +1,8 @@
+using chat_sv.BgService;
 using chat_sv.Interfaces;
 using chat_sv.Services;
 using Newtonsoft.Json.Serialization;
 using RabbitMQ.Client;
-using Simple.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -28,7 +28,16 @@ builder.Services.AddCors(options =>
         });
 
 
-
+builder.Services.AddSingleton(sp =>
+        {
+            var factory = new ConnectionFactory
+            {
+                Uri = new Uri(configuration["RabbitMq:Host"]!)
+                // Add other configuration options as needed
+            };
+            return factory.CreateConnection();
+        });
+builder.Services.AddHostedService<BgService>();
 // Register RabbitMQService without using it immediately
 // services.AddSingleton<RabbitMQService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
